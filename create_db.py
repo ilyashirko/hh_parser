@@ -17,6 +17,7 @@ def create_tables(fs, cursor):
             vacancy_url TEXT,
             response_url TEXT,
             created_at INTEGER,
+            responded INTEGER,
             processed INTEGER
         );
         """

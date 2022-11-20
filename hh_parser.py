@@ -1,11 +1,16 @@
+import sqlite3
+from time import sleep
+
 import requests
 from environs import Env
-import sqlite3
-from settings import PYTHON_DEV_HH_PARAMS
-import db_processing
 from tqdm import tqdm
 
+import db_processing
+from settings import PYTHON_DEV_HH_PARAMS
+
 HH_API_URL = 'https://api.hh.ru/vacancies'
+
+UPDATE_DELAY = 60 * 60
 
 
 def clean_text(text: str) -> str:
@@ -66,6 +71,7 @@ def run_hh_parser(hh_headers: dict,
             'vacancy_url': vacancy['alternate_url'],
             'response_url': vacancy['apply_alternate_url'],
             'created_at': vacancy['created_at'],
+            'responded': False,
             'processed': False
         }
         check_vacancy = cursor.execute(
@@ -88,4 +94,9 @@ if __name__ == '__main__':
     cursor = db.cursor()
 
     hh_headers = {'User-Agent': env.str('USER_AGENT')}
-    run_hh_parser(hh_headers, db, cursor)
+    while True:
+        try:
+            run_hh_parser(hh_headers, db, cursor)
+            sleep(UPDATE_DELAY)
+        except Exception:
+            pass
