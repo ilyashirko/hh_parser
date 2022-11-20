@@ -1,10 +1,8 @@
 import sqlite3
 from functools import partial
-from textwrap import dedent
 
 from environs import Env
-from telegram import (KeyboardButton, ReplyKeyboardMarkup, ReplyKeyboardRemove,
-                      Update, InlineKeyboardMarkup, InlineKeyboardButton)
+from telegram import KeyboardButton, ReplyKeyboardMarkup, Update
 from telegram.ext import (CallbackContext, CallbackQueryHandler,
                           CommandHandler, Filters, MessageHandler, Updater)
 
