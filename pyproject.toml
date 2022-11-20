@@ -1,0 +1,18 @@
+[tool.poetry]
+name = "hh-parser"
+version = "0.1.0"
+description = ""
+authors = ["ilyashirko <ilyashirko@gmail.com>"]
+readme = "README.md"
+packages = [{include = "hh_parser"}]
+
+[tool.poetry.dependencies]
+python = "^3.10"
+requests = "^2.28.1"
+environs = "^9.5.0"
+tqdm = "^4.64.1"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
