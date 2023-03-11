@@ -1,3 +1,5 @@
+from contextlib import suppress
+import os
 import sqlite3
 from functools import partial
 
@@ -6,7 +8,7 @@ from telegram import KeyboardButton, ReplyKeyboardMarkup, Update
 from telegram.ext import (CallbackContext, CallbackQueryHandler,
                           CommandHandler, Filters, MessageHandler, Updater)
 
-import db_processing
+import db_processing as db_processing
 import settings
 
 MAIN_KEYBOARD = ReplyKeyboardMarkup(
@@ -32,7 +34,6 @@ def send_vacancy(db: sqlite3.Connection,
                  update: Update,
                  context: CallbackContext) -> None:
     vacancy = db_processing.get_active_vacancy(db, cursor)
-    
     context.bot.send_message(
         chat_id=update.effective_chat.id,
         text=vacancy.message(),
@@ -81,6 +82,7 @@ def archive_vacancy(db: sqlite3.Connection,
         cursor,
         update.callback_query.data.split(':')[1]
     )
+
 
 def send_covering_letter(update: Update, context: CallbackContext):
     with open(env.str('COVERING_LETTER_PATH'), 'r') as file:
@@ -137,13 +139,10 @@ def run_bot(tg_bot_token: str):
 if __name__ == '__main__':
     env = Env()
     env.read_env()
-
-    try:
-        db = sqlite3.connect(env.str('DATABASE', 'vacancies.sqlite3'), check_same_thread=False)
+    
+    with suppress(Exception):
+        db = sqlite3.connect(os.path.join(settings.DB_ROOT_FOLDER, env.str('DATABASE', 'vacancies.sqlite3')), check_same_thread=False)
         cursor = db.cursor()
 
         run_bot(env.str('TELEGRAM_BOT_TOKEN'))
-    except Exception:
-        print(Exception)
-    finally:
-        db.close()
+    db.close()

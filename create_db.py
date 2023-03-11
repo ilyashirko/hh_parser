@@ -1,7 +1,9 @@
+import os
 import sqlite3
 
 from environs import Env
 
+import settings
 
 def create_tables(fs, cursor):
     cursor.execute(
@@ -30,7 +32,8 @@ if __name__ == '__main__':
     env = Env()
     env.read_env()
 
-    db = sqlite3.connect(env.str('DATABASE', 'vacancies.sqlite3'))
+    
+    db = sqlite3.connect(os.path.join(settings.DB_ROOT_FOLDER, env.str('DATABASE', 'vacancies.sqlite3')))
     cursor = db.cursor()
 
     create_tables(db, cursor)

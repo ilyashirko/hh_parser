@@ -1,6 +1,7 @@
+import re
 from sqlite3 import Cursor, Connection
 from telegram import InlineKeyboardMarkup, InlineKeyboardButton
-
+from datetime import datetime
 
 class Vacancy:
     def __init__(self, vacancy_info: list) -> None:
@@ -14,9 +15,13 @@ class Vacancy:
         self.responsibilities = vacancy_info[7]
         self.vacancy_url = vacancy_info[8]
         self.response_url = vacancy_info[9]
-        self.created_at = vacancy_info[10]
+        self.created_at = self.convert_input_datetime(vacancy_info[10])
         self.responded = vacancy_info[11]
         self.processed = vacancy_info[12]
+    
+    def convert_input_datetime(self, hh_datetime) -> datetime:
+        year, month, day, hour, minute, second, _ = [int(x) for x in re.split(r'[-T:+]', hh_datetime)]
+        return datetime(year, month, day, hour, minute, second, 0)
     
     def message(self):
         message = self.title
@@ -30,7 +35,7 @@ class Vacancy:
             message += f'\n\nОжидания:\n{self.requirements}'
         if self.responsibilities:
             message += f'\n\nЧем предстоит заниматься:\n{self.responsibilities}'
-        message += f'\n\n{self.created_at}'
+        message += f'\n\n{self.created_at.strftime("%d.%m.%Y %H:%M")}'
         return message
 
     def make_tg_inline_keyboard(self):
